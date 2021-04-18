@@ -4,6 +4,7 @@ import Router from 'next/router';
 import Link from 'next/link';
 import style from './Register.module.scss';
 import fetcher from '../../lib/utils/fetcher';
+import { getBaseURL } from '../../lib/utils/storage';
 
 export default class Register extends Component {
   constructor(props) {
@@ -44,7 +45,7 @@ export default class Register extends Component {
   async handleSubmit() {
     try {
       const { username, password, fullname } = this.state;
-      await fetcher('http://ec2-13-212-153-62.ap-southeast-1.compute.amazonaws.com:5001/users', {
+      await fetcher(`${getBaseURL()}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

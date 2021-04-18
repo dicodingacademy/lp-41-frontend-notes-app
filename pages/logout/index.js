@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import Router from 'next/router';
 import fetcher from '../../lib/utils/fetcher';
+import { getBaseURL } from '../../lib/utils/storage';
 
 class Logout extends Component {
   async componentDidMount() {
     try {
-      await fetcher('http://ec2-13-212-153-62.ap-southeast-1.compute.amazonaws.com:5001/authentications', {
+      await fetcher(`${getBaseURL()}authentications`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
