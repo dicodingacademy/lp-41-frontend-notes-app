@@ -2,6 +2,7 @@ import Head from 'next/head';
 import React, { Component } from 'react';
 import Link from 'next/link';
 import ContentEditable from 'react-contenteditable';
+import Router from 'next/router';
 import styles from './Note.module.scss';
 import FloatingButton from '../../components/Common/FloatingButton';
 import AnnounceBar from '../../components/Common/AnnounceBar';
@@ -15,10 +16,19 @@ class Note extends Component {
     this.state = {
       note: null,
       isError: false,
+      accessToken: null,
     };
   }
 
   async componentDidMount() {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      alert('Mohon untuk login dulu.');
+      await Router.push('/login');
+      return;
+    }
+
     try {
       const { id } = this.props;
       const { data: { note } } = await fetcher(`${getBaseURL()}notes/${id}`);
@@ -44,10 +54,14 @@ class Note extends Component {
   }
 
   renderSuccess() {
-    const { note } = this.state;
+    const { note, accessToken } = this.state;
     const {
       id, title, body, createdAt, updatedAt, tags,
     } = note;
+
+    if (!accessToken) {
+      return <></>;
+    }
 
     return (
       <div>

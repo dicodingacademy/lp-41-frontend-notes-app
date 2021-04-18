@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Head from 'next/head';
 import ContentEditable from 'react-contenteditable';
 import Link from 'next/link';
+import Router from 'next/router';
 import AnnounceBar from '../../../components/Common/AnnounceBar';
 import styles from './Edit.module.scss';
 import { getBaseURL } from '../../../lib/utils/storage';
@@ -18,6 +19,7 @@ class Edit extends Component {
       isFetching: false,
       isError: false,
       note: null,
+      accessToken: null,
     };
 
     this.contentEditable = React.createRef();
@@ -31,6 +33,14 @@ class Edit extends Component {
   }
 
   async componentDidMount() {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      alert('Mohon untuk login dulu.');
+      await Router.push('/login');
+      return;
+    }
+
     try {
       const { id } = this.props;
       const { data: { note } } = await fetchWithAuthentication(`${getBaseURL()}notes/${id}`);
@@ -220,7 +230,11 @@ class Edit extends Component {
   }
 
   render() {
-    const { isError, note } = this.state;
+    const { isError, note, accessToken } = this.state;
+
+    if (!accessToken) {
+      return <></>;
+    }
 
     if (isError) {
       return this.renderError();

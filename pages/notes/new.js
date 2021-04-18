@@ -2,6 +2,7 @@ import Head from 'next/head';
 import React, { Component } from 'react';
 import ContentEditable from 'react-contenteditable';
 
+import Router from 'next/router';
 import styles from './New.module.scss';
 import AnnounceBar from '../../components/Common/AnnounceBar';
 import { getBaseURL } from '../../lib/utils/storage';
@@ -16,6 +17,7 @@ class New extends Component {
       body: '',
       tags: [],
       isFetching: false,
+      accessToken: null,
     };
 
     this.contentEditable = React.createRef();
@@ -24,6 +26,23 @@ class New extends Component {
     this.handleTagsChange = this.handleTagsChange.bind(this);
     this.handleBodyChange = this.handleBodyChange.bind(this);
     this.handleSaveNote = this.handleSaveNote.bind(this);
+  }
+
+  async componentDidMount() {
+    if (window) {
+      const accessToken = localStorage.getItem('accessToken');
+
+      if (!accessToken) {
+        alert('Mohon untuk login dulu');
+        await Router.push('/login');
+        return;
+      }
+
+      this.setState((prevState) => ({
+        ...prevState,
+        accessToken,
+      }));
+    }
   }
 
   handleTitleChange({ target }) {
@@ -96,7 +115,14 @@ class New extends Component {
   }
 
   render() {
-    const { title, body, isFetching } = this.state;
+    const {
+      title, body, isFetching, accessToken,
+    } = this.state;
+
+    if (!accessToken) {
+      return <></>;
+    }
+
     return (
       <div>
         <Head>

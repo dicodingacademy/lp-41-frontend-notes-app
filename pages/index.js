@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import React, { Component } from 'react';
+import Router from 'next/router';
 import HeadBar from '../components/Common/HeadBar';
 import AnnounceBar from '../components/Common/AnnounceBar';
 import Notes from '../components/Notes';
@@ -23,10 +24,21 @@ class Home extends Component {
       notes: [],
       empty: false,
       isError: false,
+      accessToken: null,
     };
   }
 
   async componentDidMount() {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      alert('Mohon untuk login dulu.');
+      await Router.push('/login');
+      return;
+    }
+    this.setState((prevState) => ({
+      ...prevState,
+      accessToken,
+    }));
     await this._fetch();
   }
 
@@ -46,7 +58,14 @@ class Home extends Component {
   }
 
   render() {
-    const { notes, isError, empty } = this.state;
+    const {
+      notes, isError, empty, accessToken,
+    } = this.state;
+
+    if (!accessToken) {
+      return <></>;
+    }
+
     return (
       <div>
         <Head>
