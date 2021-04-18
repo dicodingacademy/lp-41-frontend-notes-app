@@ -5,7 +5,8 @@ import ContentEditable from 'react-contenteditable';
 import styles from './New.module.scss';
 import AnnounceBar from '../../components/Common/AnnounceBar';
 import { getBaseURL } from '../../lib/utils/storage';
-import fetcher from '../../lib/utils/fetcher';
+import { fetchWithAuthentication } from '../../lib/utils/fetcher';
+import AuthenticationError from '../../lib/utils/AuthenticationError';
 
 class New extends Component {
   constructor(props) {
@@ -56,8 +57,19 @@ class New extends Component {
       isFetching: true,
     }));
 
+    await this._fetch({ title, body, tags });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  handleDiscardNote() {
+    if (window) {
+      window.location.href = '/';
+    }
+  }
+
+  async _fetch({ title, body, tags }) {
     try {
-      await fetcher(`${getBaseURL()}notes`, {
+      await fetchWithAuthentication(`${getBaseURL()}notes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,21 +81,17 @@ class New extends Component {
         window.location.href = '/';
       }
     } catch (error) {
-      if (window) {
-        alert(error.message);
+      if (error instanceof AuthenticationError) {
+        if (window) {
+          alert(error.message);
+        }
+        // TODO redirect to login
       }
 
       this.setState((prevState) => ({
         ...prevState,
         isFetching: false,
       }));
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  handleDiscardNote() {
-    if (window) {
-      window.location.href = '/';
     }
   }
 

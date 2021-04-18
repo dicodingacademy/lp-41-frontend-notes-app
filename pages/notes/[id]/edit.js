@@ -5,7 +5,8 @@ import Link from 'next/link';
 import AnnounceBar from '../../../components/Common/AnnounceBar';
 import styles from './Edit.module.scss';
 import { getBaseURL } from '../../../lib/utils/storage';
-import fetcher from '../../../lib/utils/fetcher';
+import { fetchWithAuthentication } from '../../../lib/utils/fetcher';
+import AuthenticationError from '../../../lib/utils/AuthenticationError';
 
 class Edit extends Component {
   constructor(props) {
@@ -32,7 +33,7 @@ class Edit extends Component {
   async componentDidMount() {
     try {
       const { id } = this.props;
-      const { data: { note } } = await fetcher(`${getBaseURL()}notes/${id}`);
+      const { data: { note } } = await fetchWithAuthentication(`${getBaseURL()}notes/${id}`);
       const { title, body, tags } = note;
 
       this.setState((prevState) => ({
@@ -76,7 +77,7 @@ class Edit extends Component {
     }));
 
     try {
-      await fetcher(`${getBaseURL()}notes/${id}`, {
+      await fetchWithAuthentication(`${getBaseURL()}notes/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -88,6 +89,13 @@ class Edit extends Component {
         window.location.href = `/notes/${id}`;
       }
     } catch (error) {
+      if (error instanceof AuthenticationError) {
+        if (window) {
+          alert(error.message);
+        }
+        // TODO redirect to login
+      }
+
       if (window) {
         alert(error.message);
       }
@@ -103,7 +111,7 @@ class Edit extends Component {
     const { id } = this.props;
 
     try {
-      await fetcher(`${getBaseURL()}notes/${id}`, {
+      await fetchWithAuthentication(`${getBaseURL()}notes/${id}`, {
         method: 'DELETE',
       });
 
@@ -111,6 +119,13 @@ class Edit extends Component {
         window.location.href = '/';
       }
     } catch (error) {
+      if (error instanceof AuthenticationError) {
+        if (window) {
+          alert(error.message);
+        }
+        // TODO redirect to login
+      }
+
       if (window) {
         alert(error.message);
       }

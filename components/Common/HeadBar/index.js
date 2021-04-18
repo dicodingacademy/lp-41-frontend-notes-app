@@ -5,7 +5,7 @@ const HeadBar = () => (
   <header className={styles.head_bar}>
     <h1>
       Notes
-      <span> Apps (Version 1)</span>
+      <span> Apps (Version 2)</span>
     </h1>
   </header>
 );
