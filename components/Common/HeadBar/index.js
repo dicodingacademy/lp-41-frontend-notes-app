@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import styles from './HeadBar.module.scss';
 
 const HeadBar = () => (
@@ -7,6 +8,7 @@ const HeadBar = () => (
       Notes
       <span> Apps (Version 2)</span>
     </h1>
+    <Link href="/logout">Logout</Link>
   </header>
 );
 
