@@ -104,8 +104,12 @@ class New extends Component {
         if (window) {
           alert(error.message);
         }
-        // TODO redirect to login
+
+        await Router.push('/login');
+        return;
       }
+
+      alert(error.message);
 
       this.setState((prevState) => ({
         ...prevState,

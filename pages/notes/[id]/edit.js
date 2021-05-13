@@ -3,10 +3,11 @@ import Head from 'next/head';
 import ContentEditable from 'react-contenteditable';
 import Link from 'next/link';
 import Router from 'next/router';
+import Autosuggest from 'react-autosuggest';
 import AnnounceBar from '../../../components/Common/AnnounceBar';
 import styles from './Edit.module.scss';
 import { getBaseURL } from '../../../lib/utils/storage';
-import { fetchWithAuthentication } from '../../../lib/utils/fetcher';
+import fetcher, { fetchWithAuthentication } from '../../../lib/utils/fetcher';
 import AuthenticationError from '../../../lib/utils/AuthenticationError';
 
 class Edit extends Component {
@@ -20,6 +21,9 @@ class Edit extends Component {
       isError: false,
       note: null,
       accessToken: null,
+      collaboratorUsername: '',
+      suggestions: [],
+      collaboratorId: null,
     };
 
     this.contentEditable = React.createRef();
@@ -29,7 +33,14 @@ class Edit extends Component {
     this.handleBodyChange = this.handleBodyChange.bind(this);
     this.handleUpdateNote = this.handleUpdateNote.bind(this);
     this.handleDeleteNote = this.handleDeleteNote.bind(this);
-    // eslint-disable-next-line no-empty
+    this.searchUsers = this.searchUsers.bind(this);
+    this.getSuggestionValue = this.getSuggestionValue.bind(this);
+    this.onSuggestionChange = this.onSuggestionChange.bind(this);
+    this.onSuggestionFetchRequested = this.onSuggestionFetchRequested.bind(this);
+    this.onSuggestionClearRequested = this.onSuggestionClearRequested.bind(this);
+    this.onSuggestionSelected = this.onSuggestionSelected.bind(this);
+    this.onAddCollaboration = this.onAddCollaboration.bind(this);
+    this.onDeleteCollaboration = this.onDeleteCollaboration.bind(this);
   }
 
   async componentDidMount() {
@@ -147,6 +158,86 @@ class Edit extends Component {
     }
   }
 
+  onSuggestionChange(event, { newValue }) {
+    this.setState((prevState) => ({ ...prevState, collaboratorUsername: newValue }));
+  }
+
+  async onSuggestionFetchRequested({ value }) {
+    const users = await this.searchUsers(value);
+    this.setState((prevState) => ({ ...prevState, suggestions: users }));
+  }
+
+  onSuggestionClearRequested() {
+    this.setState((prevState) => ({ ...prevState, suggestions: [] }));
+  }
+
+  onSuggestionSelected(event, { suggestion }) {
+    this.setState((prevState) => ({ ...prevState, collaboratorId: suggestion.id }));
+  }
+
+  async onAddCollaboration() {
+    const { collaboratorId: userId, note: { id: noteId } } = this.state;
+
+    try {
+      const { message } = await fetchWithAuthentication(`${getBaseURL()}collaborations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, noteId }),
+      });
+      alert(message);
+      this.setState((prevState) => ({ ...prevState, collaboratorUsername: '', collaboratorId: null }));
+    } catch (error) {
+      alert(error.message);
+      this.setState((prevState) => ({ ...prevState, collaboratorUsername: '', collaboratorId: null }));
+    }
+  }
+
+  async onDeleteCollaboration() {
+    const { collaboratorId: userId, note: { id: noteId } } = this.state;
+
+    try {
+      const { message } = await fetchWithAuthentication(`${getBaseURL()}collaborations`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, noteId }),
+      });
+      alert(message);
+      this.setState((prevState) => ({ ...prevState, collaboratorUsername: '', collaboratorId: null }));
+    } catch (error) {
+      alert(error.message);
+      this.setState((prevState) => ({ ...prevState, collaboratorUsername: '', collaboratorId: null }));
+    }
+  }
+
+  getSuggestionValue(user) {
+    return user.username;
+  }
+
+  async searchUsers(value) {
+    if (!value.length) {
+      return [];
+    }
+
+    try {
+      const { data: { users } } = await fetcher(`${getBaseURL()}users?username=${value}`);
+      return users;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  renderSuggestion(suggestion) {
+    return (
+      <div>
+        {suggestion.username}
+      </div>
+    );
+  }
+
   renderError() {
     return (
       <div>
@@ -164,8 +255,14 @@ class Edit extends Component {
 
   renderSuccess() {
     const {
-      title, body, isFetching, tags,
+      title, body, isFetching, tags, collaboratorUsername, suggestions,
     } = this.state;
+
+    const inputProps = {
+      placeholder: 'Type a username to add or remove collaborator',
+      value: collaboratorUsername,
+      onChange: this.onSuggestionChange,
+    };
 
     return (
       <div>
@@ -205,6 +302,23 @@ class Edit extends Component {
               disabled={false}
               onChange={this.handleBodyChange}
             />
+
+            <div className={styles.edit_page__collaboration}>
+              <h3>Collaboration</h3>
+              <Autosuggest
+                suggestions={suggestions}
+                onSuggestionsFetchRequested={this.onSuggestionFetchRequested}
+                onSuggestionsClearRequested={this.onSuggestionClearRequested}
+                getSuggestionValue={this.getSuggestionValue}
+                renderSuggestion={this.renderSuggestion}
+                onSuggestionSelected={this.onSuggestionSelected}
+                inputProps={inputProps}
+              />
+              <div>
+                <button type="button" onClick={this.onAddCollaboration}>Add</button>
+                <button type="button" onClick={this.onDeleteCollaboration}>Remove</button>
+              </div>
+            </div>
 
             <div className={styles.edit_page__action}>
               <button
