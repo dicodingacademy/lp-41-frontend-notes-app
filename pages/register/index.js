@@ -5,6 +5,7 @@ import Link from 'next/link';
 import style from './Register.module.scss';
 import fetcher from '../../lib/utils/fetcher';
 import { getBaseURL } from '../../lib/utils/storage';
+import AnnounceBar from '../../components/Common/AnnounceBar';
 
 export default class Register extends Component {
   constructor(props) {
@@ -45,7 +46,7 @@ export default class Register extends Component {
   async handleSubmit() {
     try {
       const { username, password, fullname } = this.state;
-      await fetcher(`${getBaseURL()}/users`, {
+      await fetcher(`${getBaseURL()}users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,33 +67,36 @@ export default class Register extends Component {
       username, password, fullname,
     } = this.state;
     return (
-      <div className={style.container}>
-        <Head>
-          <title>Notes Apps | Register</title>
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
+      <div>
+        <AnnounceBar />
+        <div className={style.container}>
+          <Head>
+            <title>Notes Apps | Register</title>
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
 
-        <main>
-          <header>
-            <h1>
-              Welcome to
-              {' '}
-              <a href="/">Notes Apps</a>
-            </h1>
-            <p>
-              Please Register to Continue
-            </p>
-          </header>
+          <main>
+            <header>
+              <h1>
+                Welcome to
+                {' '}
+                <a href="/">Notes Apps</a>
+              </h1>
+              <p>
+                Please Register to Continue
+              </p>
+            </header>
 
-          <div className={style.input_container}>
-            <input type="text" placeholder="username" value={username} onChange={this.handleUsernameChange} />
-            <input type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />
-            <input type="text" placeholder="full name" value={fullname} onChange={this.handleFullnameChange} />
-            <button type="button" onClick={this.handleSubmit}>Register</button>
-          </div>
+            <div className={style.input_container}>
+              <input type="text" placeholder="username" value={username} onChange={this.handleUsernameChange} />
+              <input type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />
+              <input type="text" placeholder="full name" value={fullname} onChange={this.handleFullnameChange} />
+              <button type="button" onClick={this.handleSubmit}>Register</button>
+            </div>
 
-          <Link href="/login">Back to login</Link>
-        </main>
+            <Link href="/login">Back to login</Link>
+          </main>
+        </div>
       </div>
     );
   }

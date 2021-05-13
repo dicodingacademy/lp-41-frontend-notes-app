@@ -20,7 +20,7 @@ class NoteItem extends Component {
   render() {
     const { note } = this.props;
     const {
-      title, tags, body, createdAt, updatedAt,
+      title, tags, body, createdAt, updatedAt, usernameOwner = 'undefined',
     } = note;
 
     return (
@@ -29,6 +29,11 @@ class NoteItem extends Component {
           <h2 className={styles.note_item__title}>{title}</h2>
           <p className={styles.note_item__date}>
             {createdAt === updatedAt ? `Created at ${convertISODate(createdAt)}` : `Updated at ${convertISODate(updatedAt)}`}
+          </p>
+          <p className={styles.note_item__date}>
+            Owned by
+            {' '}
+            {usernameOwner}
           </p>
         </header>
         <ContentEditable disabled html={body} className={styles.note_item__content} />

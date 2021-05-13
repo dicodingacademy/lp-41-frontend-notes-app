@@ -5,6 +5,7 @@ import Link from 'next/link';
 import styles from './Login.module.scss';
 import fetcher from '../../lib/utils/fetcher';
 import { getBaseURL } from '../../lib/utils/storage';
+import AnnounceBar from '../../components/Common/AnnounceBar';
 
 export default class Login extends Component {
   constructor(props) {
@@ -78,33 +79,35 @@ export default class Login extends Component {
     }
 
     return (
-      <div className={styles.container}>
-        <Head>
-          <title>Notes Apps | Login</title>
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
+      <div>
+        <AnnounceBar />
+        <div className={styles.container}>
+          <Head>
+            <title>Notes Apps | Login</title>
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
+          <main>
+            <header>
+              <h1>
+                Welcome to
+                {' '}
+                <a href="/">Notes Apps</a>
+              </h1>
 
-        <main>
-          <header>
-            <h1>
-              Welcome to
-              {' '}
-              <a href="/">Notes Apps</a>
-            </h1>
+              <p>
+                Please Login to Continue
+              </p>
+            </header>
 
-            <p>
-              Please Login to Continue
-            </p>
-          </header>
+            <div className={styles.input_container}>
+              <input type="text" placeholder="username" value={username} onChange={this.handleUsernameChange} />
+              <input type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />
+              <button type="button" onClick={this.handleSubmit}>Login</button>
+            </div>
 
-          <div className={styles.input_container}>
-            <input type="text" placeholder="username" value={username} onChange={this.handleUsernameChange} />
-            <input type="password" placeholder="password" value={password} onChange={this.handlePasswordChange} />
-            <button type="button" onClick={this.handleSubmit}>Login</button>
-          </div>
-
-          <Link className={styles.register_link} href="/register">Register new account</Link>
-        </main>
+            <Link className={styles.register_link} href="/register">Register new account</Link>
+          </main>
+        </div>
       </div>
     );
   }

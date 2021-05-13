@@ -47,7 +47,7 @@ class Edit extends Component {
       const { title, body, tags } = note;
 
       this.setState((prevState) => ({
-        ...prevState, note, title, body, tags,
+        ...prevState, note, title, body, tags, accessToken,
       }));
     } catch (error) {
       this.setState((prevState) => ({ ...prevState, isError: true }));
