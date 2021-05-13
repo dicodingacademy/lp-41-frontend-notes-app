@@ -29,6 +29,7 @@
         "jsx-a11y/no-noninteractive-element-interactions": 0,
         "no-console": 0,
         "no-alert": 0,
-        "class-methods-use-this": 0
+        "class-methods-use-this": 0,
+        "linebreak-style": 0
     }
 }
