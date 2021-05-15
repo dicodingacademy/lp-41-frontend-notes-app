@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { Component } from 'react';
 import Link from 'next/link';
-import ContentEditable from 'react-contenteditable';
+import Editor from 'rich-markdown-editor';
 import Router from 'next/router';
 import styles from './Note.module.scss';
 import FloatingButton from '../../components/Common/FloatingButton';
@@ -90,7 +90,7 @@ class Note extends Component {
                 {tags.map((tag) => <span key={tag} className={styles.tag}>{tag}</span>)}
               </div>
             </header>
-            <ContentEditable disabled html={body} className={styles.detail_page__body} />
+            <Editor defaultValue={body} readOnly className={styles.detail_page__body} />
           </section>
           <FloatingButton
             onClickHandler={() => {

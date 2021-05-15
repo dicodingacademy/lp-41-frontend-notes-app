@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Head from 'next/head';
-import ContentEditable from 'react-contenteditable';
+import Editor from 'rich-markdown-editor';
 import Link from 'next/link';
 import Router from 'next/router';
 import Autosuggest from 'react-autosuggest';
@@ -40,6 +40,7 @@ class Edit extends Component {
     this.onSuggestionSelected = this.onSuggestionSelected.bind(this);
     this.onAddCollaboration = this.onAddCollaboration.bind(this);
     this.onDeleteCollaboration = this.onDeleteCollaboration.bind(this);
+    this.onImageUpload = this.onImageUpload.bind(this);
   }
 
   async componentDidMount() {
@@ -80,10 +81,11 @@ class Edit extends Component {
     }));
   }
 
-  handleBodyChange({ target }) {
+  handleBodyChange(value) {
+    const body = value();
     this.setState((prevState) => ({
       ...prevState,
-      body: target.value,
+      body: body === '\\\n' ? '' : body,
     }));
   }
 
@@ -212,6 +214,24 @@ class Edit extends Component {
     }
   }
 
+  async onImageUpload(file) {
+    const formData = new FormData();
+    formData.append('data', file);
+    const response = await fetch(`${getBaseURL()}images`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (response.status !== 201) {
+      const { message } = await response.json();
+      alert(message);
+      return '';
+    }
+
+    const { data: { filename } } = await response.json();
+    return filename;
+  }
+
   getSuggestionValue(user) {
     return user.id;
   }
@@ -300,13 +320,13 @@ class Edit extends Component {
               />
             </header>
 
-            <ContentEditable
-              className={styles.edit_page__body}
-              html={body}
-              innerRef={this.contentEditable}
-              disabled={false}
-              onChange={this.handleBodyChange}
-            />
+            <div className={styles.edit_page__body}>
+              <Editor
+                defaultValue={body}
+                uploadImage={this.onImageUpload}
+                onChange={this.handleBodyChange}
+              />
+            </div>
 
             <div className={styles.edit_page__collaboration}>
               <h3>Collaboration</h3>

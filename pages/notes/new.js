@@ -1,8 +1,8 @@
 import Head from 'next/head';
 import React, { Component } from 'react';
-import ContentEditable from 'react-contenteditable';
 
 import Router from 'next/router';
+import Editor from 'rich-markdown-editor';
 import styles from './New.module.scss';
 import AnnounceBar from '../../components/Common/AnnounceBar';
 import { getBaseURL } from '../../lib/utils/storage';
@@ -26,6 +26,7 @@ class New extends Component {
     this.handleTagsChange = this.handleTagsChange.bind(this);
     this.handleBodyChange = this.handleBodyChange.bind(this);
     this.handleSaveNote = this.handleSaveNote.bind(this);
+    this.onImageUpload = this.onImageUpload.bind(this);
   }
 
   async componentDidMount() {
@@ -61,10 +62,11 @@ class New extends Component {
     }));
   }
 
-  handleBodyChange({ target }) {
+  handleBodyChange(value) {
+    const body = value();
     this.setState((prevState) => ({
       ...prevState,
-      body: target.value,
+      body: body === '\\\n' ? '' : body,
     }));
   }
 
@@ -84,6 +86,24 @@ class New extends Component {
     if (window) {
       window.location.href = '/';
     }
+  }
+
+  async onImageUpload(file) {
+    const formData = new FormData();
+    formData.append('data', file);
+    const response = await fetch(`${getBaseURL()}images`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (response.status !== 201) {
+      const { message } = await response.json();
+      alert(message);
+      return '';
+    }
+
+    const { data: { filename } } = await response.json();
+    return filename;
   }
 
   async _fetch({ title, body, tags }) {
@@ -120,7 +140,7 @@ class New extends Component {
 
   render() {
     const {
-      title, body, isFetching, accessToken,
+      title, isFetching, accessToken,
     } = this.state;
 
     if (!accessToken) {
@@ -153,13 +173,12 @@ class New extends Component {
               />
             </header>
 
-            <ContentEditable
-              className={styles.new_page__body}
-              html={body}
-              innerRef={this.contentEditable}
-              disabled={false}
-              onChange={this.handleBodyChange}
-            />
+            <div className={styles.new_page__body}>
+              <Editor
+                uploadImage={this.onImageUpload}
+                onChange={this.handleBodyChange}
+              />
+            </div>
 
             <div className={styles.new_page__action}>
               <button

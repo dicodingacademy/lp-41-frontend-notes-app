@@ -27,6 +27,10 @@
     display: -webkit-box;
     -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
+
+    img {
+      display: none;
+    }
   }
 
   .note_item__footer {

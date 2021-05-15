@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ContentEditable from 'react-contenteditable';
+import ReactMarkdown from 'react-markdown';
 import styles from './NoteItem.module.scss';
 import { convertISODate } from '../../lib/utils/date';
 
@@ -31,7 +31,7 @@ class NoteItem extends Component {
             {createdAt === updatedAt ? `Created at ${convertISODate(createdAt)}` : `Updated at ${convertISODate(updatedAt)}`}
           </p>
         </header>
-        <ContentEditable disabled html={body} className={styles.note_item__content} />
+        <ReactMarkdown className={styles.note_item__content}>{body}</ReactMarkdown>
         <footer className={styles.note_item__footer}>
           <div className={styles.note_item__tags}>
             {tags.map((tag) => <span key={tag} className={styles.note_item__tag}>{tag}</span>)}
