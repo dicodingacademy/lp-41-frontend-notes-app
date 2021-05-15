@@ -21,9 +21,8 @@ class Edit extends Component {
       isError: false,
       note: null,
       accessToken: null,
-      collaboratorUsername: '',
       suggestions: [],
-      collaboratorId: null,
+      collaboratorId: '',
     };
 
     this.contentEditable = React.createRef();
@@ -159,7 +158,7 @@ class Edit extends Component {
   }
 
   onSuggestionChange(event, { newValue }) {
-    this.setState((prevState) => ({ ...prevState, collaboratorUsername: newValue }));
+    this.setState((prevState) => ({ ...prevState, collaboratorId: newValue }));
   }
 
   async onSuggestionFetchRequested({ value }) {
@@ -187,10 +186,10 @@ class Edit extends Component {
         body: JSON.stringify({ userId, noteId }),
       });
       alert(message);
-      this.setState((prevState) => ({ ...prevState, collaboratorUsername: '', collaboratorId: null }));
+      this.setState((prevState) => ({ ...prevState, collaboratorId: '' }));
     } catch (error) {
       alert(error.message);
-      this.setState((prevState) => ({ ...prevState, collaboratorUsername: '', collaboratorId: null }));
+      this.setState((prevState) => ({ ...prevState, collaboratorId: '' }));
     }
   }
 
@@ -206,15 +205,15 @@ class Edit extends Component {
         body: JSON.stringify({ userId, noteId }),
       });
       alert(message);
-      this.setState((prevState) => ({ ...prevState, collaboratorUsername: '', collaboratorId: null }));
+      this.setState((prevState) => ({ ...prevState, collaboratorId: '' }));
     } catch (error) {
       alert(error.message);
-      this.setState((prevState) => ({ ...prevState, collaboratorUsername: '', collaboratorId: null }));
+      this.setState((prevState) => ({ ...prevState, collaboratorId: '' }));
     }
   }
 
   getSuggestionValue(user) {
-    return user.username;
+    return user.id;
   }
 
   async searchUsers(value) {
@@ -233,7 +232,13 @@ class Edit extends Component {
   renderSuggestion(suggestion) {
     return (
       <div>
-        {suggestion.username}
+        <p>
+          <strong>{suggestion.id}</strong>
+          {' '}
+          (
+          {suggestion.username}
+          )
+        </p>
       </div>
     );
   }
@@ -255,12 +260,12 @@ class Edit extends Component {
 
   renderSuccess() {
     const {
-      title, body, isFetching, tags, collaboratorUsername, suggestions,
+      title, body, isFetching, tags, collaboratorId, suggestions,
     } = this.state;
 
     const inputProps = {
-      placeholder: 'Type a username to add or remove collaborator',
-      value: collaboratorUsername,
+      placeholder: 'Search by username to get user id',
+      value: collaboratorId,
       onChange: this.onSuggestionChange,
     };
 
@@ -305,6 +310,7 @@ class Edit extends Component {
 
             <div className={styles.edit_page__collaboration}>
               <h3>Collaboration</h3>
+              <p>User Id</p>
               <Autosuggest
                 suggestions={suggestions}
                 onSuggestionsFetchRequested={this.onSuggestionFetchRequested}

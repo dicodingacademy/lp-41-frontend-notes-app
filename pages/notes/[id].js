@@ -56,7 +56,7 @@ class Note extends Component {
   renderSuccess() {
     const { note, accessToken } = this.state;
     const {
-      id, title, body, createdAt, updatedAt, tags, ownerUsername = 'undefined',
+      id, title, body, createdAt, updatedAt, tags, username = 'undefined',
     } = note;
 
     if (!accessToken) {
@@ -84,7 +84,7 @@ class Note extends Component {
               <p className={styles.detail_page__owned}>
                 Owned by
                 {' '}
-                {ownerUsername}
+                {username}
               </p>
               <div className={styles.detail_page__tags}>
                 {tags.map((tag) => <span key={tag} className={styles.tag}>{tag}</span>)}
