@@ -15,10 +15,14 @@ class HeadBar extends Component {
 
   async componentDidMount() {
     if (window) {
-      const accessToken = localStorage.getItem('accessToken');
-      const { id: userId } = jwtDecode(accessToken);
-      const { data: { user } } = await fetcher(`${getBaseURL()}users/${userId}`);
-      this.setState((prevState) => ({ ...prevState, user }));
+      try {
+        const accessToken = localStorage.getItem('accessToken');
+        const { id: userId } = jwtDecode(accessToken);
+        const { data: { user } } = await fetcher(`${getBaseURL()}users/${userId}`);
+        this.setState((prevState) => ({ ...prevState, user }));
+      } catch {
+        // doing nothing
+      }
     }
   }
 
