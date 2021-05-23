@@ -91,7 +91,7 @@ class New extends Component {
   async onImageUpload(file) {
     const formData = new FormData();
     formData.append('data', file);
-    const response = await fetch(`${getBaseURL()}images`, {
+    const response = await fetch(`${getBaseURL()}upload/images`, {
       method: 'POST',
       body: formData,
     });
@@ -102,8 +102,8 @@ class New extends Component {
       return '';
     }
 
-    const { data: { filename } } = await response.json();
-    return filename;
+    const { data: { fileLocation } } = await response.json();
+    return fileLocation;
   }
 
   async _fetch({ title, body, tags }) {
