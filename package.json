@@ -5,18 +5,18 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 8000"
+    "start": "next start -p 8080"
   },
   "dependencies": {
-    "cookie": "^0.4.1",
+    "cookie": "^1.0.2",
     "jwt-decode": "^3.1.2",
-    "next": "10.0.6",
-    "react": "17.0.1",
+    "next": "^15.3.1",
+    "react": "^18.2.0",
     "react-autosuggest": "^10.1.0",
-    "react-contenteditable": "^3.3.5",
-    "react-dom": "17.0.1",
-    "sass": "^1.32.5",
-    "universal-cookie": "^4.0.4"
+    "react-contenteditable": "^3.3.7",
+    "react-dom": "^18.2.0",
+    "sass": "^1.87.0",
+    "universal-cookie": "^8.0.1"
   },
   "devDependencies": {
     "eslint": "^7.19.0",
